@@ -80,12 +80,17 @@ def parse(raw_text: str, base_date: date) -> ParseResult:
 
 def _build_task_summary(category: str, submit_method: Optional[str]) -> str:
     """카테고리 기반 행동형 1문장 요약 생성."""
-    method_str = f"{submit_method}로" if submit_method else "지정된 방법으로"
-    templates = {
+    if submit_method:
+        method_str = f"{submit_method}로"
+    else:
+        # 제출 계열인데 방법 미감지 시 기본값
+        method_str = "지정된 방법으로"
+
+    templates: dict[str, str] = {
         "보완요청": f"보완서류를 준비하여 {method_str} 제출",
         "제출요청": f"서류를 준비하여 {method_str} 제출",
-        "납부요청": "기한 내 해당 금액을 납부",
+        "납부요청": "기한 내 해당 금액 납부",
         "방문/예약": "지정 일정에 방문하여 절차 진행",
-        "일반안내": "내용을 확인하고 필요한 조치를 취할 것",
+        "일반안내": "내용 확인 후 필요한 조치 취하기",
     }
-    return templates.get(category, "내용을 확인하고 필요한 조치를 취할 것")
+    return templates.get(category, "내용 확인 후 필요한 조치 취하기")

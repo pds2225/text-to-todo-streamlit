@@ -43,8 +43,8 @@ def extract_deadline(text: str, base_date: date) -> Optional[str]:
             y = base_date.year
             try:
                 result = date(y, mo, d)
-                # 기준일보다 과거면 내년으로 추론
-                if result < base_date:
+                # 60일 넘게 과거인 경우만 내년으로 추론 (어제 받은 문자는 올해 날짜 유지)
+                if result < base_date - timedelta(days=60):
                     result = date(y + 1, mo, d)
                 _last_parse_logs.append(f"[date_parser] 룰2 월일 표현 (base_date 연도={y}) → {result}")
                 return str(result)

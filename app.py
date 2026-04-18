@@ -69,9 +69,23 @@ with col_result:
     else:
         r = st.session_state["current_result"]
 
-        # TODO: TASK-601 — 아래 편집 UI를 완성할 것
         edited_title = st.text_input("제목", value=r.title)
-        edited_deadline = st.text_input("기한 (YYYY-MM-DD)", value=r.deadline or "")
+
+        # 리스트 추천 (개선1)
+        LIST_OPTIONS = ["업무", "업무(장기)", "개인", "짬짬이"]
+        edited_target_list = st.selectbox(
+            "📂 Google Tasks 리스트",
+            LIST_OPTIONS,
+            index=LIST_OPTIONS.index(r.target_list) if r.target_list in LIST_OPTIONS else 0,
+        )
+
+        # 기한 + 시간 (개선2)
+        dl_c1, dl_c2 = st.columns(2)
+        with dl_c1:
+            edited_deadline = st.text_input("기한 (YYYY-MM-DD)", value=r.deadline or "")
+        with dl_c2:
+            edited_time = st.text_input("시간 (HH:MM)", value=r.deadline_time or "")
+
         edited_summary = st.text_input("할일 요약", value=r.task_summary)
         edited_category = st.selectbox(
             "카테고리", CATEGORIES,
@@ -80,10 +94,17 @@ with col_result:
         edited_org = st.text_input("기관명", value=r.organization or "")
         edited_memo = st.text_area("메모", value=r.memo, height=80)
 
-        st.markdown("**체크리스트**")
-        # TODO: TASK-601 — 체크리스트 편집 UI (추가/삭제)
+        # URL 목록 (개선4)
+        if r.urls:
+            st.markdown("**🔗 URL**")
+            for url in r.urls:
+                st.caption(url)
+
+        # 서브태스크 (개선3) — Google Tasks 하위 항목으로 매핑
+        if r.checklist:
+            st.markdown("**☑ 서브태스크** (Google Tasks 하위 항목)")
         for i, item in enumerate(r.checklist):
-            st.text_input(f"항목 {i+1}", value=item, key=f"chk_{i}")
+            st.text_input(f"서브태스크 {i+1}", value=item, key=f"chk_{i}")
 
         # ── 다운로드 버튼 ─────────────────────────────────────
         st.divider()

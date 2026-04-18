@@ -11,6 +11,7 @@ def build_memo(
     phones: list[str],
     conditions: list[str],
     submit_method: Optional[str],
+    urls: list[str] | None = None,   # 개선4
 ) -> str:
     """메모 문자열을 조합. 없는 필드는 생략."""
     parts: list[str] = []
@@ -26,7 +27,12 @@ def build_memo(
 
     memo = " / ".join(parts)
 
+    # URL은 별도 줄로 추가 (개선4)
+    if urls:
+        url_lines = "\n".join(urls[:3])
+        memo = f"{memo}\n{url_lines}".strip()
+
     if conditions:
         memo += "\n조건: " + " · ".join(conditions)
 
-    return memo[:200]
+    return memo[:300]
